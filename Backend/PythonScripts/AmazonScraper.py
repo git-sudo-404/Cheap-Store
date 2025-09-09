@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
 from selenium import webdriver
-from slenium.webdriver.chrome.service import Service 
+from selenium.webdriver.chrome.service import Service 
 from webdriver_manager.chrome import ChromeDriverManager 
 import time 
 import requests
@@ -35,16 +35,24 @@ class ProductInfoScrapper:
         print(f"Fetching data from : {self.__product_url}")
 
         try : 
-            # Step - 1 : Fetch 
-            response = requests.get(self.__product_url,headers = self.headers)
-            response.raise_for_status() # Check the status code 
-            # if it is 2__ does nothing , the program continues
-            # else if it is 4__ or 5__ , it raises HTTPError exception
+            # Step 1: Set up and launch a Chrome browser using Selenium
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headers') # Run in background without opening a UI 
+            options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+            
+            # This automatically downloads and manages the correct driver
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-            # Step - 2  : Parse
-            soup = BeautifulSoup(response.content,'html.parser')
+            # Step 2: Fetch the page 
+            driver.get(self.__product_url)
+            time.sleep(2)   # Wait for Js to load 
 
-            # Step - 3 : Extract the needed info 
+            #Step 3: Get the fully rendered page source 
+            page_source = driver.page_source 
+            driver.quit() # Close the browser 
+
+            #Step 4: Parse with BeautifulSoup 
+            soup = BeautifulSoup(page_source,'html.parser')
 
             self._parse_title(soup)
             # self._parse_description(soup)
@@ -52,7 +60,6 @@ class ProductInfoScrapper:
             # self._parse_rating(soup)
             # self._parse_reviews(soup)
 
-            print("Scraping Completed!")
 
         except requests.exceptions.RequestException as e : 
             print(f"Error fetching the URL : {e}")
