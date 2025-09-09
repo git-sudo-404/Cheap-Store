@@ -23,6 +23,11 @@
 
 * Use Redis for caching.
 
+#### Machie Learning
+
+- Understand trends and predict future cheaper prices.
+- Understance customer feedbacks and find the best overall product.
+
 #### Deployment
 
 - Use Docker for containerization.
