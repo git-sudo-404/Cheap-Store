@@ -14,7 +14,7 @@
 - MongoDB for DB
 - ReactJs for Frontend
 - ExpressJs for API
-- Beautifulsoup4 / Selenium for scraping
+- Beautifulsoup4 and Selenium for scraping
 
 #### Optimizations
 
