@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service 
 from webdriver_manager.chrome import ChromeDriverManager 
+import pandas as pd
 import time 
 import requests
+import json
 
 
 class ProductInfoScrapper:
@@ -12,10 +14,12 @@ class ProductInfoScrapper:
     def __init__(self,product_url):
         self.__product_url = product_url 
         self.__product_title = ""
-        self.__product_description = ""
+        self.__product_description = {}
         self.__product_price = 0
         self.__product_rating = 0
-        self.__product_reviews = []   
+        self.__product_reviews = []  
+        self.__no_of_ratings = 0 
+        self.__no_of_reviews = 0
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
@@ -28,7 +32,23 @@ class ProductInfoScrapper:
             print(f"Product title : {self.__product_title}")
         else :
             print("Couldn't find product title")
+    
+    def _parse_description(self,soup):
+        desc_table = soup.find("table",{"id":"productDetails_techSpec_section_1"})
+        if desc_table : 
+            for row in desc_table.find_all('tr'):
+                key_element = row.find('th')
+                value_element = row.find('td')
+                if(key_element and value_element):
+                    key = key_element.text.strip()
+                    val = value_element.text.strip().replace('\u200e','')
+                    self.__product_description[key] = val
 
+            print("Product Description")
+            print(json.dumps(self.__product_description,indent = 2))
+
+        else :
+            print("Couldn't find product info")
 
     def scrapProductPage(self):
         
@@ -55,7 +75,7 @@ class ProductInfoScrapper:
             soup = BeautifulSoup(page_source,'html.parser')
 
             self._parse_title(soup)
-            # self._parse_description(soup)
+            self._parse_description(soup)
             # self._parse_price(soup)
             # self._parse_rating(soup)
             # self._parse_reviews(soup)
