@@ -50,6 +50,14 @@ class ProductInfoScrapper:
         else :
             print("Couldn't find product info")
 
+    def _parse_price(self,soup):
+        price_element = soup.find("span",{"class":"a-price-whole"})
+        if(price_element):
+            self.__product_price = price_element.text.strip()
+            print(f"Price : {self.__product_price}")
+        else:
+            print("Price not found")
+
     def scrapProductPage(self):
         
         print(f"Fetching data from : {self.__product_url}")
@@ -76,7 +84,7 @@ class ProductInfoScrapper:
 
             self._parse_title(soup)
             self._parse_description(soup)
-            # self._parse_price(soup)
+            self._parse_price(soup)
             # self._parse_rating(soup)
             # self._parse_reviews(soup)
 
