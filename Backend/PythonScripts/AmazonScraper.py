@@ -72,6 +72,17 @@ class ProductInfoScrapper:
         else:
             print("Couldn't find product rating")
 
+    def _parse_no_of_ratings(self,soup):
+        no_of_ratings_element = soup.find('span',{'id':'acrCustomerReviewText'})
+        if no_of_ratings_element:
+            no_of_ratings_text = no_of_ratings_element.text.strip()
+            no_of_ratings_val_str = no_of_ratings_text.split(' ')[0]
+            no_of_ratings_val = float(no_of_ratings_val_str)
+            self.__no_of_ratings = no_of_ratings_val
+            print(f"No of Rating : {self.__no_of_ratings}")
+        else:
+            print("Couldn't find no of ratings")
+
 
     def scrapProductPage(self):
         
@@ -101,6 +112,8 @@ class ProductInfoScrapper:
             self._parse_description(soup)
             self._parse_price(soup)
             self._parse_rating(soup)
+            self._parse_no_of_ratings(soup)
+            # self._parse_no_reviews(soup)
             # self._parse_reviews(soup)
 
 
